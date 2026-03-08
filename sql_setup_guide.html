@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MindLoop SQL Setup</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .step {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #4CAF50;
+        }
+        .step h2 {
+            margin-top: 0;
+            color: #4CAF50;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background: rgba(0, 0, 0, 0.3);
+            color: #4CAF50;
+        }
+        button {
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 5px;
+            transition: transform 0.2s;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+        .link {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 MindLoop SQL Setup</h1>
+        <p>Automatický průvodce aplikací SQL schémat</p>
+        
+        <div class="success">
+            <strong>✅ Projekt vytvořen!</strong><br>
+            ID: wpgriubhenbjjytydyko<br>
+            URL: https://wpgriubhenbjjytydyko.supabase.co
+        </div>
+        
+        <div class="step">
+            <h2>KROK 1: Schema SQL</h2>
+            <p>Zkopíruj tento SQL a spusť v <a class="link" href="https://supabase.com/dashboard/project/wpgriubhenbjjytydyko/sql/new" target="_blank">SQL Editoru</a></p>
+            <textarea id="schema" readonly>-- Enable necessary extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "vector";
+
+-- Create ENUM types
+DO $$ BEGIN
+    CREATE TYPE goal_type AS ENUM ('SKILL', 'KNOWLEDGE');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+DO $$ BEGIN
+    CREATE TYPE node_status AS ENUM ('LOCKED', 'OPEN', 'POTENTIAL', 'GOOD', 'DONE');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+-- Create tables
+
+-- PROFILES
+CREATE TABLE IF NOT EXISTS profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- GOALS
+CREATE TABLE IF NOT EXISTS goals (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  type goal_type NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- NODES
+CREATE TABLE IF NOT EXISTS nodes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  goal_id UUID NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
+  parent_node_id UUID REFERENCES nodes(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  content_md TEXT,
+  kpis JSONB,
+  status node_status DEFAULT 'LOCKED',
+  next_review_at TIMESTAMPTZ,
+  depth_level INT DEFAULT 1,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- TEST ATTEMPTS
+CREATE TABLE IF NOT EXISTS test_attempts (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  node_id UUID NOT NULL REFERENCES nodes(id) ON DELETE CASCADE,
+  user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE DEFAULT auth.uid(),
+  user_text TEXT NOT NULL,
+  ai_feedback JSONB NOT NULL,
+  passed BOOLEAN NOT NULL,
+  score INT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE goals ENABLE ROW LEVEL SECURITY;
+ALTER TABLE nodes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE test_attempts ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies (simplified for demo - bypassed by service key anyway)
+CREATE POLICY "Users can view own profile" ON profiles
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can view own goals" ON goals
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert own goals" ON goals
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Users can update own goals" ON goals
+  FOR UPDATE USING (true);
+
+CREATE POLICY "Users can view own nodes" ON nodes
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert own nodes" ON nodes
+  FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "Users can update own nodes" ON nodes
+  FOR UPDATE USING (true);
+
+CREATE POLICY "Users can view own attempts" ON test_attempts
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can insert own attempts" ON test_attempts
+  FOR INSERT WITH CHECK (true);</textarea>
+            <button onclick="copyText('schema')">📋 Zkopírovat Schema</button>
+            <button onclick="window.open('https://supabase.com/dashboard/project/wpgriubhenbjjytydyko/sql/new')">🔗 Otevřít SQL Editor</button>
+        </div>
+        
+        <div class="step">
+            <h2>KROK 2: Demo Data</h2>
+            <p>Po úspěšném běhu Schema SQL, zkopíruj a spusť tento SQL</p>
+            <textarea id="seed" readonly>-- Demo Seed Data
+-- Jednoduchá verze bez RLS komplikací
+
+-- 1. Demo goal
+INSERT INTO goals (id, user_id, title, type) VALUES
+('10000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', 'Master React Hooks', 'SKILL')
+ON CONFLICT DO NOTHING;
+
+-- 2. Learning nodes (3-node curriculum)
+INSERT INTO nodes (id, goal_id, parent_node_id, title, content_md, kpis, status, depth_level) VALUES
+-- Node 1: DONE
+('20000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000001', NULL, 'useState Basics', 
+E'# useState Hook\n\n`useState` lets you add state to functional components.\n\n```javascript\nconst [count, setCount] = useState(0);\n```',
+'[{"id": "kpi_1", "description": "Understand useState syntax", "importance": "essential"}]'::jsonb, 
+'DONE', 1),
+
+-- Node 2: OPEN (Start here!)
+('20000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000001', 
+'useEffect Dependencies', 
+E'# useEffect Hook\n\nDependency array controls when effect runs.\n\n```javascript\nuseEffect(() => { console.log("Run!"); }, [dep]);\n```',
+'[{"id": "kpi_1", "description": "Explain dependency patterns", "importance": "essential"}]'::jsonb,
+'OPEN', 1),
+
+-- Node 3: LOCKED
+('20000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000001', '20000000-0000-0000-0000-000000000002',
+'useReducer Complex State',
+E'# useReducer\n\nFor complex state logic.',
+'[{"id": "kpi_1", "description": "When to use useReducer", "importance": "essential"}]'::jsonb,
+'LOCKED', 1)
+ON CONFLICT DO NOTHING;</textarea>
+            <button onclick="copyText('seed')">📋 Zkopírovat Seed Data</button>
+        </div>
+        
+        <div class="success">
+            <h3>🎉 Po dokončení SQL:</h3>
+            <p>✅ Backend .env a Frontend .env.local už jsou nakonfigurovány!</p>
+            <p>🚀 Můžeš hned spustit servery!</p>
+        </div>
+        
+        <button onclick="alert('Otevřu další stránku s instrukcemi pro spuštění serverů')" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">➡️ Pokračovat na Spuštění Serverů</button>
+    </div>
+    
+    <script>
+        function copyText(id) {
+            const textarea = document.getElementById(id);
+            textarea.select();
+            document.execCommand('copy');
+            alert('✅ SQL zkopírován do schránky!');
+        }
+    </script>
+</body>
+</html>
