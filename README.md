@@ -1,8 +1,15 @@
 # Mindset+ (MindLoop) - Autonomous Deliberate Practice Platform
 
-> ⚠️ **Upozornění:** Tento projekt je aktuálně ve fázi aktivního vývoje (Work in Progress). Funkcionality se mohou měnit a rozšiřovat.
+> ⚠️ **Upozornění:** Platforma je ve vývoji a zdaleka ještě **NENÍ DOKONČENÁ** (Work in Progress). Funkcionality se mohou měnit a rozšiřovat.
 
-Mindset+ (interně MindLoop) je inovativní vzdělávací platforma navržená pro efektivní a autonomní učení pomocí principů **Deliberate Practice** (záznamového učení) a **Spaced Repetition** (rozloženého opakování). Systém funguje jako váš osobní AI tutor, který dynamicky generuje učební osnovy, testuje vaše znalosti, vyhodnocuje vaše pochopení a na základě chyb vytváří personalizované doučování.
+**Proč tento projekt vznikl?**  
+*„Osobně jsem mezi platformami na deliberate practice nenašel žádnou, která by pracovala s detailností (hloubkou) AI materiálů, a to jak co se týče hloubky odborné specifikace daného tématu (většina AI učících platforem jde po povrchu témat), tak specifičnosti učících materiálů. Zároveň jsem nenarazil na funkční feedback loop pomocí AI – tedy zpětnovazební smyčku, která mění AI materiály podle naší odpovědi.“*
+
+**MindLoop je platforma, kde si můžete sami nastavit hloubku látky a jste neustále testováni AI s její zpětnou vazbou, která následně optimalizuje a mění učební materiály přesně na míru vašemu pochopení.**
+
+---
+
+Mindset+ (interně MindLoop) je inovativní vzdělávací platforma navržená pro efektivní a autonomní učení pomocí principů **Deliberate Practice** (záměrného tréninku) a **Spaced Repetition** (rozloženého opakování). Systém funguje jako váš osobní AI tutor, který dynamicky generuje učební osnovy, testuje vaše znalosti, vyhodnocuje vaše pochopení a na základě chyb vytváří personalizované doučování.
 
 ## 🚀 Hlavní funkce a jak to funguje
 
